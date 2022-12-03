@@ -8,7 +8,8 @@ class PusherService {
   String? lastConnectionState;
   Channel? channel;
   StreamSubscription? eventSubscription;
-  final StreamController<ChatMessage> _eventData = StreamController<ChatMessage>();
+  final StreamController<ChatMessage> _eventData =
+      StreamController<ChatMessage>();
 
   Sink get _inEventData => _eventData.sink;
 
@@ -16,11 +17,13 @@ class PusherService {
 
   Future<void> initPusher() async {
     try {
-      const options = PusherChannelsOptions.ws(
-          host: '185.183.243.194',
-          port: 6001,
-          key: 'abs',
-          protocol: 7);
+      const options = PusherChannelsOptions.wss(
+        host: 'https://tez-pay.uz/',
+        port: 443,
+        key: 'nMRoD9nHgwGCXVNXXS7S',
+        protocol: 7,
+        cluster: "ap1",
+      );
       pusher = PusherChannelsClient.websocket(
           options: options,
           onConnectionErrorHandle: (error, trace, refresh) {
@@ -44,7 +47,7 @@ class PusherService {
       channel ??= pusher.publicChannel(channelName);
       await eventSubscription?.cancel();
       eventSubscription = channel?.bind(eventName).listen((event) {
-        print(event.data);
+        print("CONNECTED:${event.data}");
         final ChatMessage data = ChatMessage.fromJson(event.data['message']);
         _inEventData.add(data);
       });
